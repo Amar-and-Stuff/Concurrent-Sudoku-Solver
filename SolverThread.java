@@ -58,14 +58,32 @@ public class SolverThread extends Thread{
         this.validateColumn();
         this.validateGrid();
     }
+
     private void validateRow() {
-        
-    }
-    private void validateColumn() {
-        
-    }
-    private void validateGrid() {
-        
+        for (int i = 0; i < 9; i++) {
+            if(this.ypos!=i && this.sudoku[this.xpos][i] != 0) {
+                this.state.remove(this.sudoku[this.xpos][i]);
+            }
+        }
     }
 
+    private void validateColumn() {
+        for (int i = 0; i < 9; i++) {
+            if(this.xpos!=i && this.sudoku[i][this.ypos] != 0) {
+                this.state.remove(this.sudoku[i][this.ypos]);
+            }
+        }
+    }
+
+    private void validateGrid() {
+        int si = (this.xpos / 3) * 3;
+        int sj = (this.ypos / 3) * 3;
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(!(this.xpos==si+i && this.ypos==sj+j) && this.sudoku[si+i][sj+j] != 0) {
+                    this.state.remove(this.sudoku[si+i][sj+j]);
+                }
+            }
+        }
+    }
 }
