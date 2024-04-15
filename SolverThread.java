@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class SolverThread extends Thread{
@@ -12,9 +11,6 @@ public class SolverThread extends Thread{
         this.ypos=ypos;
         this.sudoku=sudoku;
         this.state= new HashSet<>(Set.of(1,2,3,4,5,6,7,8,9));
-        // for(int i=1;i<=9;i++) {
-        //     this.state.add(i);
-        // }
     }
     public void run() {
         while(true) {
@@ -25,7 +21,7 @@ public class SolverThread extends Thread{
                 // check if state is solved (if one element exists)
                 if(this.state.size()==1) {
                     this.sudoku[xpos][ypos]=getValue();
-                    this.sudoku.notify();
+                    this.sudoku.notifyAll();
                     // if solved quit the thread
                     break;
                 }
@@ -39,27 +35,18 @@ public class SolverThread extends Thread{
                 }
             }
         }
-        try {this.join();} catch (InterruptedException e) {e.printStackTrace();}
     
     }
     public int getValue() {
-        // return state.stream().findFirst().get();
-        if (state.size()==1) {
-            Iterator<Integer> iterator = state.iterator();
-            int value = iterator.next(); // Get the first (and only) element
-            iterator.remove(); // Remove the element from the set
-            return value;
-        } else {
-            throw new IllegalStateException("Set is empty");
-        }
+        return state.stream().findFirst().get();
     }
-    private void check() {
+    public void check() {
         this.validateRow();
         this.validateColumn();
         this.validateGrid();
     }
 
-    private void validateRow() {
+    public void validateRow() {
         for (int i = 0; i < 9; i++) {
             if(this.ypos!=i && this.sudoku[this.xpos][i] != 0) {
                 this.state.remove(this.sudoku[this.xpos][i]);
@@ -67,7 +54,7 @@ public class SolverThread extends Thread{
         }
     }
 
-    private void validateColumn() {
+    public void validateColumn() {
         for (int i = 0; i < 9; i++) {
             if(this.xpos!=i && this.sudoku[i][this.ypos] != 0) {
                 this.state.remove(this.sudoku[i][this.ypos]);
@@ -75,7 +62,7 @@ public class SolverThread extends Thread{
         }
     }
 
-    private void validateGrid() {
+    public void validateGrid() {
         int si = (this.xpos / 3) * 3;
         int sj = (this.ypos / 3) * 3;
         for(int i = 0; i < 3; i++) {
@@ -85,5 +72,10 @@ public class SolverThread extends Thread{
                 }
             }
         }
+        
+    }
+    @Override
+    public String toString() {
+        return state.toString()+"\t"+this.getState()+"\n";
     }
 }
